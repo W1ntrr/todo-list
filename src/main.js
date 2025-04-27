@@ -1,3 +1,4 @@
+import './style.css';
 import ProjectController from './modules/projectController.js';
 import Project from './modules/project.js';
 import Storage from './modules/storage.js';
