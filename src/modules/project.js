@@ -1,15 +1,16 @@
-export class Project {
+export default class Project {
   constructor(name) {
     this.name = name;
-    this.tasks = new Map();
+    this.tasks = [];
   }
 
   addTask(todo) {
-    this.tasks.set(todo.id, todo);
-    console.log(this.tasks);
+    this.tasks.push(todo);
+    console.log(`Added task successfully!`);
   }
 
   deleteTask(taskId) {
-    this.tasks.delete(taskId);
+    this.tasks = this.tasks.filter((task) => task.id !== taskId);
+    console.log('Removed task successfully!');
   }
 }
