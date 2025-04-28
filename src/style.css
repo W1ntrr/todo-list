@@ -140,6 +140,10 @@ h2 {
   margin-left: 8px;
 }
 
+.task {
+  display: flex;
+}
+
 .wrapper {
   display: flex;
   align-items: center;
@@ -183,9 +187,4 @@ h2 {
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
-}
-
-.wrapper input[type='checkbox']:checked ~ .task-text {
-  text-decoration: line-through;
-  color: var(--color-light-gray);
 }
