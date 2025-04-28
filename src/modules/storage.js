@@ -5,10 +5,14 @@ export default class Storage {
       tasks: project.tasks,
     }));
     const projectJSON = JSON.stringify(serializedProject);
-    localStorage.setItem('Project', projectJSON);
+    localStorage.setItem("Project", projectJSON);
   }
 
   static loadProject() {
-    return JSON.parse(localStorage.getItem('Project') || []);
+    return JSON.parse(localStorage.getItem("Project") || "[]");
+  }
+
+  static deleteStorage() {
+    localStorage.clear();
   }
 }

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap");
 
 * {
   margin: 0;
@@ -7,12 +7,13 @@
 }
 
 :root {
-  --color-sidebar-background: hsl(215, 28%, 26%);
-  --color-sidebar-icon: hsl(225, 70%, 75%);
-  --color-sidebar-text: hsl(220, 20%, 92%);
-  --color-sidebar-border: hsl(215, 20%, 35%);
-  --color-sidebar-hover: hsl(215, 24%, 34%);
-  --color-light-gray: #aeb6bc;
+  --color-dark: #475569;
+  --color-accent-soft: #3b82f6;
+  --color-edge: #64748b;
+  --color-hover-deep: #e2e8f0;
+  --color-text-faint: #cbd5e1;
+  --color-light-bg: #f8fafc;
+  --color-card-bg: #ffffff;
 }
 
 body {
@@ -20,52 +21,70 @@ body {
   min-height: 100dvh;
   display: grid;
   grid-template-columns: auto 1fr;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 400;
+  background-color: var(--color-light-bg);
+  overflow: hidden;
 }
+
+/* === SIDEBAR === */
 
 #sidebar {
   height: 100vh;
   width: 250px;
-  border-right: 1px solid var(--color-sidebar-border);
   padding: 5px 1rem;
-  background-color: var(--color-sidebar-background);
+  margin: 1rem;
+  border-radius: 16px;
+  background-color: var(--color-card-bg);
+  color: var(--color-dark);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+
+  .sidebar-user {
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+    svg,
+    span {
+      fill: var(--color-accent-soft);
+      color: var(--color-accent-soft);
+    }
+  }
 }
 
 .sidebar-home svg,
 .sidebar-user svg,
 .sidebar-projects svg {
-  fill: var(--color-sidebar-icon);
+  fill: var(--color-dark);
 }
 
-#sidebar span,
-h2 {
-  color: var(--color-sidebar-text);
-}
-
-#sidebar .sidebar-user {
-  padding: 1rem 0;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-size: 1.5rem;
-  font-weight: 500;
-}
+/* === SIDEBAR MENU ITEMS === */
 
 #sidebar .menu-item,
 #sidebar .project-item {
+  font-weight: 500;
   border-radius: 0.5rem;
   padding: 0.85rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: 0.15s ease-in-out;
+  transition: 0.25s ease;
   cursor: pointer;
 }
 
 #sidebar .menu-item:hover,
 #sidebar .project-item:hover {
-  background-color: var(--color-sidebar-hover);
+  background-color: var(--color-hover-deep);
+}
+
+#sidebar .menu-item:hover .menu-text,
+#sidebar .project-item:hover .project-text,
+#sidebar .menu-item:hover svg,
+#sidebar .project-item:hover svg {
+  color: var(--color-accent-soft);
+  fill: var(--color-accent-soft);
 }
 
 #sidebar .menu-item svg,
@@ -87,7 +106,16 @@ h2 {
 .add-project-btn {
   background: none;
   border: none;
+  cursor: pointer;
+  svg {
+    fill: var(--color-text-faint);
+  }
+  svg:hover {
+    fill: var(--color-accent-soft);
+  }
 }
+
+/* === MAIN CONTAINER === */
 
 .container {
   padding: min(3em, 7%);
@@ -102,16 +130,23 @@ h2 {
   justify-content: center;
 }
 
+.content-header {
+  color: var(--color-accent-soft);
+}
+
+/* === TASK GROUPS === */
+
 .task-group {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
   padding: 2rem;
-  border-radius: 5px;
+  border-radius: 20px;
   width: 300px;
   height: auto;
   gap: 0.5rem;
+  background-color: var(--color-card-bg);
 }
 
 .task-group-title {
@@ -125,14 +160,16 @@ h2 {
 }
 
 .task-group-info p {
-  color: var(--color-light-gray);
+  color: var(--color-text-faint);
 }
+
+/* === TASK ITEMS === */
 
 .task-item {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.25rem;
+  gap: 1rem;
   margin-top: 1rem;
 }
 
@@ -142,16 +179,55 @@ h2 {
 
 .task {
   display: flex;
+  color: var(--color-dark);
 }
+
+.task:not(:last-child) {
+  border-bottom: 1px solid var(--color-hover-deep);
+  padding-bottom: 1rem;
+}
+
+.badge {
+  background-color: var(--color-text-faint);
+  color: var(--color-edge);
+  font-size: 0.8rem;
+  border-radius: 24px;
+  font-weight: 700;
+  padding: 3px 9px;
+  margin-left: auto;
+}
+
+.badge:empty {
+  display: none;
+}
+
+.task-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  transition: 0.25s ease;
+}
+
+.task-actions svg {
+  fill: var(--color-text-faint);
+  transition: 0.25s ease;
+}
+
+.task-actions svg:hover {
+  fill: var(--color-accent-soft);
+  cursor: pointer;
+}
+
+/* === CHECKBOX WRAPPER === */
 
 .wrapper {
   display: flex;
   align-items: center;
   cursor: pointer;
-  user-select: none;
 }
 
-.wrapper input[type='checkbox'] {
+.wrapper input[type="checkbox"] {
   opacity: 0;
   position: absolute;
   cursor: pointer;
@@ -162,29 +238,56 @@ h2 {
 .wrapper .checkmark {
   height: 20px;
   width: 20px;
-  background-color: #eee;
-  border: 2px solid #ccc;
+  background-color: var(--color-card-bg);
+  border: 2px solid var(--color-edge);
   display: inline-block;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-right: 10px;
   vertical-align: middle;
-  transition: 150ms ease;
+  transition: 0.25s ease;
 }
 
-.wrapper input[type='checkbox']:checked + .checkmark {
-  background-color: var(--color-sidebar-icon);
-  border-color: var(--color-sidebar-icon);
+.wrapper input[type="checkbox"]:checked + .checkmark {
+  background-color: var(--color-accent-soft);
+  border-color: var(--color-accent-soft);
 }
 
-.wrapper input[type='checkbox']:checked + .checkmark::after {
-  content: '';
+.wrapper input[type="checkbox"]:checked + .checkmark::after {
+  content: "";
   display: block;
   position: relative;
   left: 5px;
   top: 0;
-  width: 6px;
+  width: 5px;
   height: 12px;
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+/* === ADD TASK BUTTON === */
+
+.add-task {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 0.5rem;
+  color: var(--color-text-faint);
+  cursor: pointer;
+  transition: 0.25s ease;
+  background: none;
+  border: none;
+  font-size: 1rem;
+}
+
+.add-task svg {
+  transition: 0.25s ease;
+}
+
+.add-task:hover {
+  color: var(--color-accent-soft);
+}
+
+.add-task:hover svg {
+  fill: var(--color-accent-soft);
 }
