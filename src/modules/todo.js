@@ -1,6 +1,6 @@
 export default class Todo {
-  constructor(title, description, dueDate, priority) {
-    this.id = crypto.randomUUID();
+  constructor(id = crypto.randomUUID(), title, description, dueDate, priority) {
+    this.id = id;
     this.title = title;
     this.description = description;
     this.dueDate = dueDate;
@@ -8,8 +8,8 @@ export default class Todo {
     this.status = 'Incomplete';
   }
 
-  static createTask({ title, description, dueDate, priority, status }) {
-    return new Todo(title, description, dueDate, priority, status);
+  static createTask({ id, title, description, dueDate, priority, status }) {
+    return new Todo(id, title, description, dueDate, priority, status);
   }
 
   toggleStatus() {

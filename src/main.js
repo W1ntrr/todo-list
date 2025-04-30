@@ -11,54 +11,33 @@ import {
 
 const sidebar = document.getElementById('sidebar');
 
-const projects = Storage.loadProject();
+let projects = Storage.loadProject();
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (projects.length === 0) {
+    projects = createTestData();
+    Storage.saveProject(projects);
+  }
   renderInboxDetails(projects);
-  Storage.loadProject();
-  createTestData();
   initSidebarListeners();
+  createTestData();
 });
 
 // Testing Cases
 function createTestData() {
-  const projectManager = new ProjectController();
-  const school = new Project('School');
-  const work = new Project('Work');
-  const chore = new Project('Chore');
-  const personal = new Project('Personal');
-  const travel = new Project('Travel');
-  const something = new Project('Something');
-
-  const mathHomework = Todo.createTask({
-    title: 'Complete Calculus Homework',
-    description: 'Solve all exercise from Chapter 6',
-    dueDate: '2025-04-29',
-    priority: 'High',
+  const sampleTask = Todo.createTask({
+    title: 'Test Task',
+    description: 'This task was added programmatically for testing.',
+    dueDate: '2025-05-01',
+    priority: 'Medium',
   });
-  const englishEssay = Todo.createTask({
-    title: 'Finish English Essay Draft',
-    description: 'Write the first draft of the essay on Shakespeare',
-    dueDate: '2025-04-30',
-    priority: 'High',
-  });
-  school.addTask(mathHomework);
-  work.addTask(englishEssay);
 
-  mathHomework.editTask(
-    'Finish Math Homework',
-    'Work on chapter 7',
-    '2025-05-05',
-    'Low'
-  );
-  mathHomework.toggleStatus();
-
-  projectManager.addProject(work);
-  projectManager.addProject(school);
-  projectManager.addProject(chore);
-  projectManager.addProject(personal);
-  projectManager.addProject(travel);
-  projectManager.addProject(something);
+  const schoolProject = projects.find((project) => project.name === 'School');
+  if (schoolProject) {
+    schoolProject.addTask(sampleTask);
+    Storage.saveProject(projects);
+    renderInboxDetails(projects);
+  }
 }
 
 function initSidebarListeners() {

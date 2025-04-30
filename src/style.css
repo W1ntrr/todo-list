@@ -14,7 +14,7 @@
   --color-text-faint: #b6bfca;
   --color-light-bg: #e9e9e9;
   --color-card-bg: #f7f9fb;
-  --color-error: #ef4444;
+  --color-red: #ef4444;
   --color-selected: #dbeafe;
 }
 
@@ -131,7 +131,7 @@ body {
 .content {
   padding: min(2em, 15%);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   align-items: flex-start;
   justify-content: center;
   gap: 1.25rem;
@@ -150,7 +150,7 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
   padding: 2rem;
   border-radius: 20px;
-  width: 300px;
+  width: 400px;
   height: auto;
   gap: 0.5rem;
   background-color: var(--color-card-bg);
@@ -216,14 +216,32 @@ body {
   transition: 0.25s ease;
 }
 
-.task-actions svg {
-  fill: var(--color-text-faint);
-  transition: 0.25s ease;
+.task-actions {
+  display: flex;
+  gap: 5px;
 }
 
-.task-actions svg:hover {
+.task-edit svg,
+.task-delete svg {
+  transition: transform 0.25s ease;
+  transform: scale(0.95);
+}
+
+.task-edit svg:hover {
   fill: var(--color-accent-soft);
   cursor: pointer;
+  transform: scale(1);
+}
+
+.task-delete svg:hover {
+  fill: var(--color-red);
+  cursor: pointer;
+  transform: scale(1);
+}
+
+.task-edit svg,
+.task-delete svg {
+  fill: var(--color-text-faint);
 }
 
 /* === CHECKBOX WRAPPER === */
@@ -270,6 +288,10 @@ body {
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+.task-text.completed {
+  text-decoration: line-through;
 }
 
 /* === ADD TASK BUTTON === */
