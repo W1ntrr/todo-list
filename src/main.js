@@ -9,38 +9,38 @@ import {
   clearElement,
 } from './modules/uiController.js';
 
-const sidebar = document.getElementById('sidebar');
+const projectController = new ProjectController();
 
 let projects = Storage.loadProject();
+projectController.projects = projects;
 
-document.addEventListener('DOMContentLoaded', () => {
-  if (projects.length === 0) {
-    projects = createTestData();
-    Storage.saveProject(projects);
-  }
+initializeApp();
+
+function initializeApp() {
   renderInboxDetails(projects);
   initSidebarListeners();
   createTestData();
-});
+}
 
 // Testing Cases
 function createTestData() {
-  const sampleTask = Todo.createTask({
-    title: 'Test Task',
-    description: 'This task was added programmatically for testing.',
-    dueDate: '2025-05-01',
-    priority: 'Medium',
-  });
+  const localProject = new Project('Local');
 
-  const schoolProject = projects.find((project) => project.name === 'School');
-  if (schoolProject) {
-    schoolProject.addTask(sampleTask);
+  if (localProject) {
+    const sampleTask = Todo.createTask({
+      title: 'Test Task',
+      description: 'This task was added programmatically for testing.',
+      dueDate: '2025-05-01',
+      priority: 'Medium',
+    });
+    localProject.addTask(sampleTask);
+    projectController.addProject(localProject);
     Storage.saveProject(projects);
-    renderInboxDetails(projects);
   }
 }
 
 function initSidebarListeners() {
+  const sidebar = document.getElementById('sidebar');
   sidebar.addEventListener('click', (e) => {
     const clickedItem = e.target.closest('.menu-item, .project-item');
     if (!clickedItem) return;

@@ -135,6 +135,8 @@ body {
   align-items: flex-start;
   justify-content: center;
   gap: 1.25rem;
+  width: 100%;
+  max-width: 100%;
 }
 
 .content-header {
@@ -150,14 +152,15 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
   padding: 2rem;
   border-radius: 20px;
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   height: auto;
   gap: 0.5rem;
   background-color: var(--color-card-bg);
 }
 
 .task-group-title {
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
   font-weight: 600;
 }
 
@@ -323,4 +326,112 @@ body {
 
 .add-task:active {
   transform: scale(0.95);
+}
+
+/* === TASK FORM === */
+
+dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: none;
+  padding: 2rem;
+  height: 55vh;
+  width: clamp(300px, 80vw, 600px);
+  background-color: var(--color-card-bg);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 20px;
+}
+
+#task-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  input {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    font-size: 1.25rem;
+  }
+}
+
+.title-row .close-button {
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  font-size: 2rem;
+  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+}
+
+.title-row .close-button:hover {
+  background-color: var(--color-light-bg);
+  cursor: pointer;
+}
+
+#task-info-container {
+  display: grid;
+  grid-template-columns: 1fr 0.25fr;
+  gap: 3rem;
+  flex: 1;
+}
+
+.left-section {
+  display: flex;
+  flex-direction: column;
+
+  input {
+    margin-top: 1rem;
+    height: 3rem;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    background-color: var(--color-light-bg);
+    color: var(--color-edge);
+  }
+}
+
+.right-section {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.right-section input,
+.right-section select {
+  border: none;
+  background-color: var(--color-light-bg);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.form-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  button {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+    background-color: var(--color-light-bg);
+  }
 }

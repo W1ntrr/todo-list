@@ -13,4 +13,8 @@ export default class Project {
     this.tasks = this.tasks.filter((task) => task.id !== taskId);
     console.log('Removed task successfully!');
   }
+
+  getTask() {
+    return this.tasks;
+  }
 }
