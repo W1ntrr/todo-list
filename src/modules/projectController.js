@@ -1,6 +1,6 @@
-import Storage from './storage.js';
+import Storage from "./storage.js";
 
-export default class ProjectController {
+class ProjectController {
   constructor() {
     this.projects = [];
   }
@@ -8,7 +8,7 @@ export default class ProjectController {
   addProject(project) {
     for (const storedProject of this.projects) {
       if (storedProject.name === project.name) {
-        console.log('Project Already Exists!');
+        console.log("Project Already Exists!");
         return false;
       }
     }
@@ -23,4 +23,15 @@ export default class ProjectController {
     );
     Storage.saveProject(this.projects);
   }
+
+  getAllProjects() {
+    return this.projects;
+  }
+
+  save() {
+    Storage.saveProject(this.projects);
+  }
 }
+
+const projectController = new ProjectController();
+export default projectController;
