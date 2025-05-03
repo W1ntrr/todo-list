@@ -1,41 +1,40 @@
 import './style.css';
 import ProjectController from './modules/projectController.js';
-import Project from './modules/project.js';
 import Storage from './modules/storage.js';
 import Todo from './modules/todo.js';
 import {
   renderInboxDetails,
   renderTodayDetails,
-  clearElement,
 } from './modules/uiController.js';
 
 const projectController = new ProjectController();
 
-let projects = Storage.loadProject();
-projectController.projects = projects;
+let allProjects = Storage.loadProject();
+projectController.projects = allProjects;
 
 initializeApp();
 
 function initializeApp() {
-  renderInboxDetails(projects);
+  renderInboxDetails(allProjects);
   initSidebarListeners();
-  createTestData();
+  // createTestData();
 }
 
 // Testing Cases
 function createTestData() {
-  const localProject = new Project('Local');
+  const localProject = allProjects.find((project) => project.name === 'School');
 
   if (localProject) {
     const sampleTask = Todo.createTask({
-      title: 'Test Task',
-      description: 'This task was added programmatically for testing.',
+      title: 'This task was added programmatically for testing.',
+      description: 'Something',
       dueDate: '2025-05-01',
       priority: 'Medium',
     });
+
     localProject.addTask(sampleTask);
     projectController.addProject(localProject);
-    Storage.saveProject(projects);
+    Storage.saveProject(allProjects);
   }
 }
 
@@ -55,7 +54,7 @@ function initSidebarListeners() {
     if (tab) {
       switch (tab) {
         case 'inbox':
-          renderInboxDetails(projects);
+          renderInboxDetails(allProjects);
           break;
         case 'today':
           renderTodayDetails();

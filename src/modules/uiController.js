@@ -1,9 +1,14 @@
 import note from '../images/note_stack_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg';
 import Storage from './storage';
+
 const content = document.querySelector('.content');
 
 const form = document.getElementById('dialog');
 const closeButton = document.querySelector('.close-button');
+
+let currentEditingProject = null;
+let currentEditingTask = null;
+let allProjects = [];
 
 export const clearElement = (element) => {
   while (element.firstChild) {
@@ -11,22 +16,23 @@ export const clearElement = (element) => {
   }
 };
 
-export const renderInboxDetails = (projects) => {
+export const renderInboxDetails = (projectsData) => {
+  allProjects = projectsData;
   clearElement(content);
   const contentHeader = document.querySelector('.content-header');
   contentHeader.textContent = 'Inbox';
-  projects.forEach((project) => {
-    createTaskGroup(projects, project);
+  allProjects.forEach((proj) => {
+    createTaskGroup(proj);
   });
 };
 
-function createTaskGroup(projects, project) {
+function createTaskGroup(proj) {
   const taskGroup = document.createElement('div');
   taskGroup.classList.add('task-group');
 
   const taskGroupTitle = document.createElement('div');
   taskGroupTitle.classList.add('task-group-title');
-  taskGroupTitle.textContent = project.name;
+  taskGroupTitle.textContent = proj.name;
 
   const taskGroupInfo = document.createElement('div');
   taskGroupInfo.classList.add('task-group-info');
@@ -38,11 +44,9 @@ function createTaskGroup(projects, project) {
   const taskCount = document.createElement('p');
   taskCount.classList.add('task-count');
   taskCount.textContent =
-    project.tasks.length === 0
+    proj.tasks.length === 0
       ? 'No task'
-      : `${project.tasks.length} ${
-          project.tasks.length === 1 ? 'task' : 'tasks'
-        }`;
+      : `${proj.tasks.length} ${proj.tasks.length === 1 ? 'task' : 'tasks'}`;
 
   const taskItem = document.createElement('div');
   taskItem.classList.add('task-item');
@@ -60,8 +64,8 @@ function createTaskGroup(projects, project) {
 
   const fragment = document.createDocumentFragment();
 
-  project.tasks.forEach((task) => {
-    const taskElement = renderTaskList(projects, project, task);
+  proj.tasks.forEach((task) => {
+    const taskElement = renderTaskList(allProjects, proj, task);
     fragment.appendChild(taskElement);
   });
 
@@ -101,7 +105,7 @@ function renderTaskList(projects, project, task) {
 
   const taskText = document.createElement('div');
   taskText.classList.add('task-text');
-  taskText.textContent = task.description;
+  taskText.textContent = task.title;
 
   const taskActions = document.createElement('div');
   taskActions.classList.add('task-actions');
@@ -111,6 +115,14 @@ function renderTaskList(projects, project, task) {
   taskEdit.setAttribute('data-open-form', '');
 
   taskEdit.addEventListener('click', () => {
+    currentEditingProject = project;
+    currentEditingTask = task;
+
+    document.getElementById('task-title').value = task.title;
+    document.getElementById('task-description').value = task.description;
+    document.getElementById('task-date').value = task.dueDate;
+    document.getElementById('task-priority').value = task.priority;
+
     form.showModal();
   });
 
@@ -132,7 +144,7 @@ function renderTaskList(projects, project, task) {
   taskDelete.addEventListener('click', () => {
     project.deleteTask(task.id);
     Storage.saveProject(projects);
-    renderInboxDetails(projects);
+    renderInboxDetails(allProjects);
   });
 
   checkbox.addEventListener('change', () => {
@@ -180,3 +192,29 @@ function createSVGIcon(pathData, color) {
   svg.appendChild(path);
   return svg;
 }
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const newTaskTitle = document.getElementById('task-title').value;
+  const newTaskDescription = document.getElementById('task-description').value;
+  const newTaskDueDate = document.getElementById('task-date').value;
+  const newTaskPriority = document.getElementById('task-priority').value;
+
+  if (currentEditingProject && currentEditingTask) {
+    currentEditingTask.editTask(
+      newTaskTitle,
+      newTaskDescription,
+      newTaskDueDate,
+      newTaskPriority
+    );
+  }
+  Storage.saveProject(allProjects);
+  renderInboxDetails(allProjects);
+  console.log(allProjects);
+
+  currentEditingProject = null;
+  currentEditingTask = null;
+
+  form.close();
+});

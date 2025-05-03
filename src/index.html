@@ -131,17 +131,17 @@
               id="task-title"
               placeholder="Enter a title"
               required />
-            <button class="close-button">&times;</button>
+            <button class="close-button" formnovalidate>&times;</button>
           </div>
           <div id="task-info-container">
             <div class="left-section">
               <label for="task-description">Description</label>
-              <input
-                type="text"
+              <textarea
                 name="task-description"
                 id="task-description"
                 placeholder="Add a more detailed description"
-                required />
+                required>
+              </textarea>
             </div>
             <div class="right-section">
               <input type="date" name="task-date" id="task-date" required />

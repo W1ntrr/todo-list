@@ -394,10 +394,11 @@ dialog {
   display: flex;
   flex-direction: column;
 
-  input {
-    margin-top: 1rem;
-    height: 3rem;
+  textarea {
+    margin: 1rem 0;
+    height: 100%;
     padding: 0.5rem;
+    resize: none;
     border-radius: 0.25rem;
     border: none;
     background-color: var(--color-light-bg);
