@@ -1,6 +1,7 @@
 import note from '../images/note_stack_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg';
 import projectController from './projectController';
 import Todo from './todo';
+import { isAfter, isToday, startOfToday, parseISO } from 'date-fns';
 
 const content = document.querySelector('.content');
 
@@ -21,9 +22,10 @@ export const clearElement = (element) => {
 };
 
 export const renderInboxDetails = () => {
+  const projects = projectController.getAllProjects();
+
   currentView = 'Inbox';
   currentProjectName = null;
-  const projects = projectController.getAllProjects();
 
   clearElement(content);
   const contentHeader = document.querySelector('.content-header');
@@ -32,17 +34,22 @@ export const renderInboxDetails = () => {
 
   contentHeader.textContent = 'Inbox';
   projects.forEach((proj) => {
-    createTaskGroup(proj);
+    createTaskGroup(
+      proj.name,
+      proj.tasks.map((task) => ({ task, project: proj }))
+    );
   });
 };
 
-export const createTaskGroup = (proj) => {
+export const createTaskGroup = (title, tasks) => {
+  if (!tasks) return;
+
   const taskGroup = document.createElement('div');
   taskGroup.classList.add('task-group');
 
   const taskGroupTitle = document.createElement('div');
   taskGroupTitle.classList.add('task-group-title');
-  taskGroupTitle.textContent = proj.name;
+  taskGroupTitle.textContent = title;
 
   const taskGroupInfo = document.createElement('div');
   taskGroupInfo.classList.add('task-group-info');
@@ -54,16 +61,36 @@ export const createTaskGroup = (proj) => {
   const taskCount = document.createElement('p');
   taskCount.classList.add('task-count');
 
+  const count = tasks.length;
+  taskCount.textContent =
+    count === 0 ? 'No Task' : `${count} ${count === 1 ? 'Task' : 'Tasks'}`;
+
   const taskItem = document.createElement('div');
   taskItem.classList.add('task-item');
+
+  const fragment = document.createDocumentFragment();
+  tasks.forEach(({ task, project }) => {
+    const taskElement = renderTaskList(project, task);
+    fragment.appendChild(taskElement);
+  });
 
   const addTaskBtn = document.createElement('button');
   addTaskBtn.classList.add('add-task');
 
-  addTaskBtn.addEventListener('click', () => {
-    currentEditingProject = proj;
-    dialog.showModal();
-  });
+  const allProjects = projectController.getAllProjects();
+  let defaultProject = allProjects.find((project) => project.name === title);
+
+  if (!defaultProject && allProjects.length > 0) {
+    defaultProject = allProjects[0];
+  }
+
+  if (defaultProject) {
+    addTaskBtn.addEventListener('click', () => {
+      currentEditingProject = defaultProject;
+      currentEditingTask = null;
+      dialog.showModal();
+    });
+  }
 
   const addTaskIcon = createSVGIcon(
     'M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z',
@@ -72,13 +99,6 @@ export const createTaskGroup = (proj) => {
 
   const addTaskText = document.createElement('p');
   addTaskText.textContent = 'Add Task';
-
-  const fragment = document.createDocumentFragment();
-
-  proj.tasks.forEach((task) => {
-    const taskElement = renderTaskList(proj, task);
-    fragment.appendChild(taskElement);
-  });
 
   taskItem.appendChild(fragment);
 
@@ -94,8 +114,6 @@ export const createTaskGroup = (proj) => {
 
   addTaskBtn.appendChild(addTaskIcon);
   addTaskBtn.appendChild(addTaskText);
-
-  updateTaskCount(proj);
 };
 
 const renderTaskList = (project, task) => {
@@ -163,6 +181,7 @@ const renderTaskList = (project, task) => {
     projectController.save();
     taskElement.remove();
     updateTaskCount(project);
+    updateAllBadges();
   });
 
   checkbox.addEventListener('change', () => {
@@ -196,35 +215,67 @@ const renderTaskList = (project, task) => {
 };
 
 export const renderTodayDetails = () => {
+  clearElement(content);
   currentView = 'Today';
   currentProjectName = null;
-  clearElement(content);
+
   const contentHeader = document.querySelector('.content-header');
-
   content.removeAttribute('id');
-
   contentHeader.textContent = 'Today';
+
+  const todayTasks = [];
+
+  projectController.projects.forEach((project) => {
+    project.tasks.forEach((task) => {
+      if (isToday(parseISO(task.dueDate))) {
+        todayTasks.push({ task, project });
+      }
+    });
+  });
+  createTaskGroup('Today', todayTasks);
 };
 
 export const renderUpcomingDetails = () => {
+  clearElement(content);
   currentView = 'Upcoming';
   currentProjectName = null;
-  clearElement(content);
+
   const contentHeader = document.querySelector('.content-header');
-
   content.removeAttribute('id');
-
   contentHeader.textContent = 'Upcoming';
+
+  const upcomingTask = [];
+
+  projectController.projects.forEach((project) => {
+    project.tasks.forEach((task) => {
+      const taskDate = task.dueDate;
+      if (isAfter(taskDate, startOfToday)) {
+        upcomingTask.push({ task, project });
+      }
+    });
+  });
+  createTaskGroup('Upcoming', upcomingTask);
 };
 
 export const renderImportantDetails = () => {
+  clearElement(content);
   currentView = 'Important';
   currentProjectName = null;
-  clearElement(content);
-  const contentHeader = document.querySelector('.content-header');
 
+  const contentHeader = document.querySelector('.content-header');
   content.removeAttribute('id');
   contentHeader.textContent = 'Important';
+
+  const importantTask = [];
+
+  projectController.projects.forEach((project) => {
+    project.tasks.forEach((task) => {
+      if (task.priority === 'High') {
+        importantTask.push({ task, project });
+      }
+    });
+  });
+  createTaskGroup('Important', importantTask);
 };
 
 export const renderProjects = (projectName) => {
@@ -261,8 +312,11 @@ export const renderCurrentProject = (currentProject) => {
     .getAllProjects()
     .find((project) => project.name === currentProject);
 
-  createTaskGroup(selectedProject);
-  renderTaskList(selectedProject, selectedProject.tasks);
+  const taskPairs = selectedProject.tasks.map((task) => ({
+    task,
+    project: selectedProject,
+  }));
+  createTaskGroup(selectedProject.name, taskPairs);
 
   const contentHeader = document.querySelector('.content-header');
 
@@ -287,6 +341,7 @@ const createSVGIcon = (pathData, color) => {
 
 const updateTaskCount = (project) => {
   const taskGroups = document.querySelectorAll('.task-group');
+
   taskGroups.forEach((group) => {
     const title = group.querySelector('.task-group-title').textContent;
     if (title === project.name) {
@@ -297,6 +352,34 @@ const updateTaskCount = (project) => {
         count === 0 ? 'No Task' : `${count} ${count === 1 ? 'Task' : 'Tasks'}`;
     }
   });
+};
+
+const getAllTasks = () => {
+  return projectController.getAllProjects().flatMap((proj) => proj.tasks);
+};
+
+export const updateAllBadges = () => {
+  const allTasks = getAllTasks();
+
+  document.getElementById('badge-inbox').textContent = `${
+    allTasks.length === 0 ? '' : allTasks.length
+  }`;
+
+  const today = new Date().toISOString().split('T')[0];
+  const todayTasks = allTasks.filter((task) => task.dueDate === today);
+  document.getElementById('badge-today').textContent = `${
+    todayTasks.length === 0 ? '' : todayTasks.length
+  }`;
+
+  const upcomingTasks = allTasks.filter((task) => task.dueDate > today);
+  document.getElementById('badge-upcoming').textContent = `${
+    upcomingTasks.length === 0 ? '' : upcomingTasks.length
+  }`;
+
+  const importantTasks = allTasks.filter((task) => task.priority === 'High');
+  document.getElementById('badge-important').textContent = `${
+    importantTasks.length === 0 ? '' : importantTasks.length
+  }`;
 };
 
 dialog.addEventListener('submit', (e) => {
@@ -349,4 +432,6 @@ dialog.addEventListener('submit', (e) => {
       renderCurrentProject(currentProjectName);
       break;
   }
+
+  updateAllBadges();
 });
