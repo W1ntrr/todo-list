@@ -15,10 +15,40 @@ let currentEditingTask = null;
 let currentView = 'inbox';
 let currentProjectName = null;
 
+/*
+  To-Do:
+  - Implement a "Create Project" button
+  - Show an alert prompting users to create a project before adding tasks if none exist
+  - Add task count badge to each project
+  - Redesign styling to match Any.do look
+  - Show warning before deleting a task
+*/
+
 export const clearElement = (element) => {
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
+};
+
+const renderViewTasks = (viewName, filterFn) => {
+  clearElement(content);
+  const contentHeader = document.querySelector('.content-header');
+  content.removeAttribute('id');
+  contentHeader.textContent = viewName;
+
+  currentView = viewName;
+  currentProjectName = null;
+
+  const filteredTasks = [];
+
+  projectController.getAllProjects().forEach((project) => {
+    project.tasks.forEach((task) => {
+      if (filterFn(task)) {
+        filteredTasks.push({ task, project });
+      }
+    });
+  });
+  createTaskGroup(viewName, filteredTasks);
 };
 
 export const renderInboxDetails = () => {
@@ -178,16 +208,19 @@ const renderTaskList = (project, task) => {
 
   taskDelete.addEventListener('click', () => {
     project.deleteTask(task.id);
-    projectController.save();
+    projectController.saveProjects();
     taskElement.remove();
+
     updateTaskCount(project);
     updateAllBadges();
+
+    refreshCurrentView();
   });
 
   checkbox.addEventListener('change', () => {
     taskText.classList.toggle('completed', checkbox.checked);
     task.toggleStatus();
-    projectController.save();
+    projectController.saveProjects();
   });
 
   if (task.status === 'Complete') {
@@ -215,67 +248,15 @@ const renderTaskList = (project, task) => {
 };
 
 export const renderTodayDetails = () => {
-  clearElement(content);
-  currentView = 'Today';
-  currentProjectName = null;
-
-  const contentHeader = document.querySelector('.content-header');
-  content.removeAttribute('id');
-  contentHeader.textContent = 'Today';
-
-  const todayTasks = [];
-
-  projectController.projects.forEach((project) => {
-    project.tasks.forEach((task) => {
-      if (isToday(parseISO(task.dueDate))) {
-        todayTasks.push({ task, project });
-      }
-    });
-  });
-  createTaskGroup('Today', todayTasks);
+  renderViewTasks('Today', (task) => isToday(parseISO(task.dueDate)));
 };
 
 export const renderUpcomingDetails = () => {
-  clearElement(content);
-  currentView = 'Upcoming';
-  currentProjectName = null;
-
-  const contentHeader = document.querySelector('.content-header');
-  content.removeAttribute('id');
-  contentHeader.textContent = 'Upcoming';
-
-  const upcomingTask = [];
-
-  projectController.projects.forEach((project) => {
-    project.tasks.forEach((task) => {
-      const taskDate = task.dueDate;
-      if (isAfter(taskDate, startOfToday)) {
-        upcomingTask.push({ task, project });
-      }
-    });
-  });
-  createTaskGroup('Upcoming', upcomingTask);
+  renderViewTasks('Upcoming', (task) => isAfter(task.dueDate, startOfToday));
 };
 
 export const renderImportantDetails = () => {
-  clearElement(content);
-  currentView = 'Important';
-  currentProjectName = null;
-
-  const contentHeader = document.querySelector('.content-header');
-  content.removeAttribute('id');
-  contentHeader.textContent = 'Important';
-
-  const importantTask = [];
-
-  projectController.projects.forEach((project) => {
-    project.tasks.forEach((task) => {
-      if (task.priority === 'High') {
-        importantTask.push({ task, project });
-      }
-    });
-  });
-  createTaskGroup('Important', importantTask);
+  renderViewTasks('Important', (task) => task.priority === 'High');
 };
 
 export const renderProjects = (projectName) => {
@@ -311,6 +292,11 @@ export const renderCurrentProject = (currentProject) => {
   const selectedProject = projectController
     .getAllProjects()
     .find((project) => project.name === currentProject);
+
+  if (!selectedProject) {
+    console.error(`Project ${currentProject} is not found`);
+    return;
+  }
 
   const taskPairs = selectedProject.tasks.map((task) => ({
     task,
@@ -382,39 +368,30 @@ export const updateAllBadges = () => {
   }`;
 };
 
-dialog.addEventListener('submit', (e) => {
-  e.preventDefault();
+const editTask = (title, description, dueDate, priority) => {
+  currentEditingTask.editTask(title, description, dueDate, priority);
+};
 
-  const newTaskTitle = document.getElementById('task-title').value;
-  const newTaskDescription = document.getElementById('task-description').value;
-  const newTaskDueDate = document.getElementById('task-date').value;
-  const newTaskPriority = document.getElementById('task-priority').value;
+const createTask = (title, description, dueDate, priority) => {
+  const newTask = Todo.createTask({
+    title: title,
+    description: description,
+    dueDate: dueDate,
+    priority: priority,
+  });
+  currentEditingProject.addTask(newTask);
+  updateTaskCount(currentEditingProject);
+};
 
-  if (currentEditingProject && currentEditingTask) {
-    currentEditingTask.editTask(
-      newTaskTitle,
-      newTaskDescription,
-      newTaskDueDate,
-      newTaskPriority
-    );
-  } else if (currentEditingProject) {
-    const newTask = Todo.createTask({
-      title: newTaskTitle,
-      description: newTaskDescription,
-      dueDate: newTaskDueDate,
-      priority: newTaskPriority,
-    });
-    currentEditingProject.addTask(newTask);
-    updateTaskCount(currentEditingProject);
-  }
-  projectController.save();
-
+const resetDialog = () => {
   currentEditingProject = null;
   currentEditingTask = null;
 
   dialog.close();
   form.reset();
+};
 
+const refreshCurrentView = () => {
   switch (currentView) {
     case 'Inbox':
       renderInboxDetails();
@@ -432,6 +409,32 @@ dialog.addEventListener('submit', (e) => {
       renderCurrentProject(currentProjectName);
       break;
   }
+};
+const handleTaskFormSubmit = () => {
+  const newTaskTitle = document.getElementById('task-title').value;
+  const newTaskDescription = document.getElementById('task-description').value;
+  const newTaskDueDate = document.getElementById('task-date').value;
+  const newTaskPriority = document.getElementById('task-priority').value;
+
+  if (currentEditingProject && currentEditingTask) {
+    editTask(newTaskTitle, newTaskDescription, newTaskDueDate, newTaskPriority);
+  } else if (currentEditingProject) {
+    createTask(
+      newTaskTitle,
+      newTaskDescription,
+      newTaskDueDate,
+      newTaskPriority
+    );
+  }
+
+  projectController.saveProjects();
+  resetDialog();
+  refreshCurrentView();
 
   updateAllBadges();
+};
+
+dialog.addEventListener('submit', (e) => {
+  e.preventDefault();
+  handleTaskFormSubmit();
 });
