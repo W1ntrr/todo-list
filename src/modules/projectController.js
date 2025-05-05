@@ -1,16 +1,20 @@
 import Storage from './storage.js';
 import Project from './project.js';
 
-class ProjectController {
-  constructor() {
-    this.projects = [];
+export default class ProjectController {
+  static projects = [];
+
+  static init() {
+    const savedProjects = Storage.loadProject();
+
+    this.projects = Array.isArray(savedProjects) ? savedProjects : [];
 
     if (this.projects.length === 0) {
-      this.addProject({ name: 'Default' });
+      this.addProject({ name: 'Default', tasks: [] });
     }
   }
 
-  addProject(projectData) {
+  static addProject(projectData) {
     if (
       this.projects.some(
         (storedProject) => storedProject.name === projectData.name
@@ -26,21 +30,20 @@ class ProjectController {
     return project;
   }
 
-  deleteProject(projectToDelete) {
+  static deleteProject(projectToDelete) {
     this.projects = this.projects.filter(
       (existingProject) => existingProject.name !== projectToDelete.name
     );
     this.saveProjects();
   }
 
-  getAllProjects() {
+  static getAllProjects() {
     return this.projects;
   }
 
-  saveProjects() {
+  static saveProjects() {
     Storage.saveProject(this.projects);
   }
 }
 
-const projectController = new ProjectController();
-export default projectController;
+ProjectController.init();

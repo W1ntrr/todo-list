@@ -1,62 +1,78 @@
 import './style.css';
-import projectController from './modules/projectController.js';
+import ProjectController from './modules/projectController.js';
 import Storage from './modules/storage.js';
-import {
-  renderInboxDetails,
-  renderTodayDetails,
-  renderUpcomingDetails,
-  renderImportantDetails,
-  renderCurrentProject,
-  renderProjects,
-  updateAllBadges,
-} from './modules/uiController.js';
+import UI from './modules/uiController.js';
 
-projectController.projects = Storage.loadProject();
+class Main {
+  constructor() {
+    this.dialog = document.getElementById('dialog');
 
-initializeApp();
+    this.initializeComponents();
+    this.initializeDOM();
+    this.setupDialogSubmit();
+  }
 
-function initializeApp() {
-  renderInboxDetails();
-  initSidebarListeners();
-  updateAllBadges();
-}
+  initializeComponents() {
+    this.ui = new UI();
+  }
 
-function initSidebarListeners() {
-  const sidebar = document.getElementById('sidebar');
+  initializeDOM() {
+    this.ui.renderInboxDetails();
+    this.renderProjectsInSidebar();
+    this.initSidebarListeners();
+    this.ui.updateAllBadges();
+  }
 
-  projectController.projects.forEach((project) => {
-    renderProjects(project.name);
-  });
-
-  sidebar.addEventListener('click', (e) => {
-    const clickedItem = e.target.closest('.menu-item, .project-item');
-    if (!clickedItem) return;
-
-    document.querySelectorAll('.menu-item, .project-item').forEach((item) => {
-      item.classList.remove('active');
+  renderProjectsInSidebar() {
+    ProjectController.projects.forEach((project) => {
+      this.ui.renderProjects(project.name);
     });
-    clickedItem.classList.add('active');
+  }
 
-    const tab = clickedItem.dataset.tab;
-    const projectName = clickedItem.dataset.project;
+  initSidebarListeners() {
+    const sidebar = document.getElementById('sidebar');
 
-    if (tab) {
-      switch (tab) {
-        case 'inbox':
-          renderInboxDetails();
-          break;
-        case 'today':
-          renderTodayDetails();
-          break;
-        case 'upcoming':
-          renderUpcomingDetails();
-          break;
-        case 'important':
-          renderImportantDetails();
-          break;
+    sidebar.addEventListener('click', (e) => {
+      const clickedItem = e.target.closest('.menu-item, .project-item');
+      if (!clickedItem) return;
+
+      document.querySelectorAll('.menu-item, .project-item').forEach((item) => {
+        item.classList.remove('active');
+      });
+      clickedItem.classList.add('active');
+
+      const tab = clickedItem.dataset.tab;
+      const projectName = clickedItem.dataset.project;
+
+      if (tab) {
+        switch (tab) {
+          case 'inbox':
+            this.ui.renderInboxDetails();
+            break;
+          case 'today':
+            this.ui.renderTodayDetails();
+            break;
+          case 'upcoming':
+            this.ui.renderUpcomingDetails();
+            break;
+          case 'important':
+            this.ui.renderImportantDetails();
+            break;
+        }
+      } else if (projectName) {
+        this.ui.renderCurrentProject(projectName);
       }
-    } else if (projectName) {
-      renderCurrentProject(projectName);
-    }
-  });
+    });
+  }
+
+  setupDialogSubmit() {
+    this.dialog.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.ui.handleTaskFormSubmit();
+    });
+  }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  new Main();
+});
