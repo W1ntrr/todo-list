@@ -111,6 +111,30 @@
         </div>
 
         <div class="project-list"></div>
+        <dialog data-modal id="project-dialog">
+          <form id="project-form">
+            <div class="project-warning">Project already exists</div>
+            <button class="close-project-button" formnovalidate>&times;</button>
+            <div class="project-title">
+              <input
+                type="text"
+                name="project-name"
+                id="project-name"
+                placeholder="Add a project title"
+                required
+              />
+            </div>
+            <div class="project-form-button-container">
+              <button
+                type="submit"
+                id="project-form-add-button"
+                data-close-form
+              >
+                Add
+              </button>
+            </div>
+          </form>
+        </dialog>
       </div>
     </nav>
 

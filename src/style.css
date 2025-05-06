@@ -455,3 +455,11 @@ textarea:hover {
   transform: scale(0.95);
   background-color: #3372d9;
 }
+
+.project-warning {
+  display: none;
+}
+
+.project-warning.show {
+  display: block;
+}

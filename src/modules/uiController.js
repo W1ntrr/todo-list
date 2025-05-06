@@ -1,29 +1,29 @@
-import note from '../images/note_stack_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg';
-import ProjectController from './projectController';
-import Todo from './todo';
-import { isAfter, isToday, startOfToday, parseISO } from 'date-fns';
+import note from "../images/note_stack_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import ProjectController from "./projectController";
+import Todo from "./todo";
+import { format, isAfter, isToday, startOfToday, parseISO } from "date-fns";
 
 /*
   To-Do:
-  - Implement a "Create Project" button
-  - Show an alert prompting users to create a project before adding tasks if none exist
-  - Add task count badge to each project
   - Redesign styling to match Any.do look
   - Show warning before deleting a task
+  - Decrease the number of badges when task completed
 */
 
 export default class UI {
   constructor() {
-    this.content = document.querySelector('.content');
+    this.content = document.querySelector(".content");
 
-    this.dialog = document.getElementById('dialog');
-    this.form = document.getElementById('task-form');
-    this.closeButton = document.querySelector('.close-button');
+    this.dialog = document.getElementById("dialog");
+    this.projectDialog = document.getElementById("project-dialog");
+    this.projectForm = document.getElementById("project-form");
+    this.form = document.getElementById("task-form");
+    this.closeButton = document.querySelector(".close-button");
 
     this.currentEditingProject = null;
     this.currentEditingTask = null;
 
-    this.currentView = 'inbox';
+    this.currentView = "inbox";
     this.currentProjectName = null;
   }
 
@@ -35,8 +35,8 @@ export default class UI {
 
   renderViewTasks = (viewName, filterFn) => {
     this.clearElement(this.content);
-    const contentHeader = document.querySelector('.content-header');
-    this.content.removeAttribute('id');
+    const contentHeader = document.querySelector(".content-header");
+    this.content.removeAttribute("id");
     contentHeader.textContent = viewName;
 
     this.currentView = viewName;
@@ -57,15 +57,15 @@ export default class UI {
   renderInboxDetails = () => {
     const projects = ProjectController.getAllProjects();
 
-    this.currentView = 'Inbox';
+    this.currentView = "Inbox";
     this.currentProjectName = null;
 
     this.clearElement(this.content);
-    const contentHeader = document.querySelector('.content-header');
+    const contentHeader = document.querySelector(".content-header");
 
-    this.content.removeAttribute('id');
+    this.content.removeAttribute("id");
 
-    contentHeader.textContent = 'Inbox';
+    contentHeader.textContent = "Inbox";
     projects.forEach((proj) => {
       this.createTaskGroup(
         proj.name,
@@ -77,29 +77,29 @@ export default class UI {
   createTaskGroup = (title, tasks) => {
     if (!tasks) return;
 
-    const taskGroup = document.createElement('div');
-    taskGroup.classList.add('task-group');
+    const taskGroup = document.createElement("div");
+    taskGroup.classList.add("task-group");
 
-    const taskGroupTitle = document.createElement('div');
-    taskGroupTitle.classList.add('task-group-title');
+    const taskGroupTitle = document.createElement("div");
+    taskGroupTitle.classList.add("task-group-title");
     taskGroupTitle.textContent = title;
 
-    const taskGroupInfo = document.createElement('div');
-    taskGroupInfo.classList.add('task-group-info');
+    const taskGroupInfo = document.createElement("div");
+    taskGroupInfo.classList.add("task-group-info");
 
-    const img = document.createElement('img');
+    const img = document.createElement("img");
     img.src = note;
-    img.alt = 'Task Icon';
+    img.alt = "Task Icon";
 
-    const taskCount = document.createElement('p');
-    taskCount.classList.add('task-count');
+    const taskCount = document.createElement("p");
+    taskCount.classList.add("task-count");
 
     const count = tasks.length;
     taskCount.textContent =
-      count === 0 ? 'No Task' : `${count} ${count === 1 ? 'Task' : 'Tasks'}`;
+      count === 0 ? "No Task" : `${count} ${count === 1 ? "Task" : "Tasks"}`;
 
-    const taskItem = document.createElement('div');
-    taskItem.classList.add('task-item');
+    const taskItem = document.createElement("div");
+    taskItem.classList.add("task-item");
 
     const fragment = document.createDocumentFragment();
     tasks.forEach(({ task, project }) => {
@@ -107,8 +107,8 @@ export default class UI {
       fragment.appendChild(taskElement);
     });
 
-    const addTaskBtn = document.createElement('button');
-    addTaskBtn.classList.add('add-task');
+    const addTaskBtn = document.createElement("button");
+    addTaskBtn.classList.add("add-task");
 
     const allProjects = ProjectController.getAllProjects();
     let defaultProject = allProjects.find((project) => project.name === title);
@@ -118,24 +118,24 @@ export default class UI {
     }
 
     if (defaultProject) {
-      addTaskBtn.addEventListener('click', () => {
+      addTaskBtn.addEventListener("click", () => {
         this.currentEditingProject = defaultProject;
         this.currentEditingTask = null;
         this.dialog.showModal();
 
-        this.closeButton.addEventListener('click', () => {
+        this.closeButton.addEventListener("click", () => {
           this.resetDialog();
         });
       });
     }
 
     const addTaskIcon = this.createSVGIcon(
-      'M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z',
-      '#ced4d9'
+      "M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z",
+      "#ced4d9"
     );
 
-    const addTaskText = document.createElement('p');
-    addTaskText.textContent = 'Add Task';
+    const addTaskText = document.createElement("p");
+    addTaskText.textContent = "Add Task";
 
     taskItem.appendChild(fragment);
 
@@ -154,60 +154,60 @@ export default class UI {
   };
 
   renderTaskList = (project, task) => {
-    const taskElement = document.createElement('div');
-    taskElement.classList.add('task');
+    const taskElement = document.createElement("div");
+    taskElement.classList.add("task");
     taskElement.dataset.id = task.id;
 
-    const wrapper = document.createElement('label');
-    wrapper.classList.add('wrapper');
+    const wrapper = document.createElement("label");
+    wrapper.classList.add("wrapper");
 
-    const checkbox = document.createElement('input');
-    checkbox.setAttribute('type', 'checkbox');
-    checkbox.setAttribute('name', 'task');
+    const checkbox = document.createElement("input");
+    checkbox.setAttribute("type", "checkbox");
+    checkbox.setAttribute("name", "task");
 
-    const checkmark = document.createElement('span');
-    checkmark.classList.add('checkmark');
+    const checkmark = document.createElement("span");
+    checkmark.classList.add("checkmark");
 
-    const taskContent = document.createElement('div');
-    taskContent.classList.add('task-content');
+    const taskContent = document.createElement("div");
+    taskContent.classList.add("task-content");
 
-    const taskText = document.createElement('div');
-    taskText.classList.add('task-text');
+    const taskText = document.createElement("div");
+    taskText.classList.add("task-text");
     taskText.textContent = task.title;
 
-    const taskActions = document.createElement('div');
-    taskActions.classList.add('task-actions');
+    const taskActions = document.createElement("div");
+    taskActions.classList.add("task-actions");
 
-    const taskEdit = document.createElement('div');
-    taskEdit.classList.add('task-edit');
-    taskEdit.setAttribute('data-open-form', '');
+    const taskEdit = document.createElement("div");
+    taskEdit.classList.add("task-edit");
+    taskEdit.setAttribute("data-open-form", "");
 
-    taskEdit.addEventListener('click', () => {
+    taskEdit.addEventListener("click", () => {
       if (!checkbox.checked) {
         this.currentEditingProject = project;
         this.currentEditingTask = task;
 
-        document.getElementById('task-title').value = task.title;
-        document.getElementById('task-description').value = task.description;
-        document.getElementById('task-date').value = task.dueDate;
-        document.getElementById('task-priority').value = task.priority;
+        document.getElementById("task-title").value = task.title;
+        document.getElementById("task-description").value = task.description;
+        document.getElementById("task-date").value = task.dueDate;
+        document.getElementById("task-priority").value = task.priority;
 
         this.dialog.showModal();
       }
     });
 
     const taskEditIcon = this.createSVGIcon(
-      'M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z'
+      "M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z"
     );
 
-    const taskDelete = document.createElement('div');
-    taskDelete.classList.add('task-delete');
+    const taskDelete = document.createElement("div");
+    taskDelete.classList.add("task-delete");
 
     const taskDeleteIcon = this.createSVGIcon(
-      'M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z'
+      "M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"
     );
 
-    taskDelete.addEventListener('click', () => {
+    taskDelete.addEventListener("click", () => {
       project.deleteTask(task.id);
       ProjectController.saveProjects();
       taskElement.remove();
@@ -218,19 +218,19 @@ export default class UI {
       this.refreshCurrentView();
     });
 
-    checkbox.addEventListener('change', () => {
-      taskText.classList.toggle('completed', checkbox.checked);
+    checkbox.addEventListener("change", () => {
+      taskText.classList.toggle("completed", checkbox.checked);
       task.toggleStatus();
       ProjectController.saveProjects();
     });
 
-    if (task.status === 'Complete') {
+    if (task.status === "Complete") {
       checkbox.checked = true;
-      taskText.classList.add('completed');
+      taskText.classList.add("completed");
     }
 
-    checkbox.setAttribute('id', `checkbox-${task.id}`);
-    wrapper.setAttribute('id', `checkbox-${task.id}`);
+    checkbox.setAttribute("id", `checkbox-${task.id}`);
+    wrapper.setAttribute("id", `checkbox-${task.id}`);
 
     taskElement.appendChild(wrapper);
     taskElement.appendChild(taskContent);
@@ -249,37 +249,73 @@ export default class UI {
   };
 
   renderTodayDetails = () => {
-    this.renderViewTasks('Today', (task) => isToday(parseISO(task.dueDate)));
+    this.renderViewTasks("Today", (task) => isToday(parseISO(task.dueDate)));
   };
 
   renderUpcomingDetails = () => {
-    this.renderViewTasks('Upcoming', (task) =>
+    this.renderViewTasks("Upcoming", (task) =>
       isAfter(task.dueDate, startOfToday)
     );
   };
 
   renderImportantDetails = () => {
-    this.renderViewTasks('Important', (task) => task.priority === 'High');
+    this.renderViewTasks("Important", (task) => task.priority === "High");
   };
 
-  renderProjects = (projectName) => {
-    const projectList = document.querySelector('.project-list');
+  displayProjectForm = () => {
+    const projectDialog = document.getElementById("project-dialog");
+    const projectForm = document.getElementById("project-form");
 
-    const projectItem = document.createElement('div');
-    projectItem.classList.add('project-item');
-    projectItem.setAttribute('data-project', projectName);
+    const addProjectBtn = document.querySelector(".add-project-btn");
+    addProjectBtn.addEventListener("click", () => {
+      this.projectDialog.showModal();
+    });
 
-    const projectSVG = this.createSVGIcon(
-      'M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z',
-      '#000000'
+    const closeProjectBtn = document.querySelector(".close-project-button");
+    closeProjectBtn.addEventListener("click", () => {
+      this.projectDialog.close();
+      this.projectForm.reset();
+    });
+  };
+
+  handleProjectForm() {
+    const newProjectName = document.getElementById("project-name").value;
+    const projectWarning = document.querySelector(".project-warning");
+
+    projectWarning.classList.remove("show");
+
+    const existingProject = ProjectController.getAllProjects().some(
+      (project) => project.name === newProjectName
     );
 
-    const projectTitle = document.createElement('span');
-    projectTitle.classList.add('project-text');
+    if (!existingProject) {
+      ProjectController.addProject({ name: newProjectName });
+      this.refreshCurrentView();
+      this.renderSidebarProjects(newProjectName);
+      this.projectDialog.close();
+    } else {
+      projectWarning.classList.add("show");
+    }
+  }
+
+  renderSidebarProjects = (projectName) => {
+    const projectList = document.querySelector(".project-list");
+
+    const projectItem = document.createElement("div");
+    projectItem.classList.add("project-item");
+    projectItem.setAttribute("data-project", projectName);
+
+    const projectSVG = this.createSVGIcon(
+      "M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z",
+      "#000000"
+    );
+
+    const projectTitle = document.createElement("span");
+    projectTitle.classList.add("project-text");
     projectTitle.textContent = projectName;
 
-    const badge = document.createElement('span');
-    badge.classList.add('badge');
+    const badge = document.createElement("span");
+    badge.classList.add("badge");
 
     projectList.appendChild(projectItem);
     projectItem.appendChild(projectSVG);
@@ -288,7 +324,7 @@ export default class UI {
   };
 
   renderCurrentProject = (currentProject) => {
-    this.currentView = 'Project';
+    this.currentView = "Project";
     this.currentProjectName = currentProject;
     this.clearElement(this.content);
 
@@ -307,69 +343,67 @@ export default class UI {
     }));
     this.createTaskGroup(selectedProject.name, taskPairs);
 
-    const contentHeader = document.querySelector('.content-header');
+    const contentHeader = document.querySelector(".content-header");
 
-    this.content.setAttribute('id', 'selected-project');
+    this.content.setAttribute("id", "selected-project");
     contentHeader.textContent = selectedProject.name;
   };
 
   createSVGIcon = (pathData, color) => {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
-    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    svg.setAttribute('height', '24px');
-    svg.setAttribute('viewBox', '0 -960 960 960');
-    svg.setAttribute('width', '24px');
-    svg.setAttribute('fill', color);
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    svg.setAttribute("height", "24px");
+    svg.setAttribute("viewBox", "0 -960 960 960");
+    svg.setAttribute("width", "24px");
+    svg.setAttribute("fill", color);
 
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', pathData);
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", pathData);
     svg.appendChild(path);
     return svg;
   };
 
   updateTaskCount = (project) => {
-    const taskGroups = document.querySelectorAll('.task-group');
+    const taskGroups = document.querySelectorAll(".task-group");
 
     taskGroups.forEach((group) => {
-      const title = group.querySelector('.task-group-title').textContent;
+      const title = group.querySelector(".task-group-title").textContent;
       if (title === project.name) {
-        const countElement = group.querySelector('.task-count');
+        const countElement = group.querySelector(".task-count");
         const count = project.tasks.length;
 
         countElement.textContent =
           count === 0
-            ? 'No Task'
-            : `${count} ${count === 1 ? 'Task' : 'Tasks'}`;
+            ? "No Task"
+            : `${count} ${count === 1 ? "Task" : "Tasks"}`;
       }
     });
   };
 
-  getAllTasks = () => {
-    return ProjectController.getAllProjects().flatMap((proj) => proj.tasks);
-  };
-
   updateAllBadges = () => {
-    const allTasks = this.getAllTasks();
+    const allTasks = ProjectController.getAllProjects().flatMap(
+      (proj) => proj.tasks
+    );
 
-    document.getElementById('badge-inbox').textContent = `${
-      allTasks.length === 0 ? '' : allTasks.length
+    document.getElementById("badge-inbox").textContent = `${
+      allTasks.length === 0 ? "" : allTasks.length
     }`;
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = format(startOfToday, "yyyy-MM-dd");
     const todayTasks = allTasks.filter((task) => task.dueDate === today);
-    document.getElementById('badge-today').textContent = `${
-      todayTasks.length === 0 ? '' : todayTasks.length
+    document.getElementById("badge-today").textContent = `${
+      todayTasks.length === 0 ? "" : todayTasks.length
     }`;
 
     const upcomingTasks = allTasks.filter((task) => task.dueDate > today);
-    document.getElementById('badge-upcoming').textContent = `${
-      upcomingTasks.length === 0 ? '' : upcomingTasks.length
+    document.getElementById("badge-upcoming").textContent = `${
+      upcomingTasks.length === 0 ? "" : upcomingTasks.length
     }`;
 
-    const importantTasks = allTasks.filter((task) => task.priority === 'High');
-    document.getElementById('badge-important').textContent = `${
-      importantTasks.length === 0 ? '' : importantTasks.length
+    const importantTasks = allTasks.filter((task) => task.priority === "High");
+    document.getElementById("badge-important").textContent = `${
+      importantTasks.length === 0 ? "" : importantTasks.length
     }`;
   };
 
@@ -399,29 +433,30 @@ export default class UI {
 
   refreshCurrentView = () => {
     switch (this.currentView) {
-      case 'Inbox':
+      case "Inbox":
         this.renderInboxDetails();
         break;
-      case 'Today':
+      case "Today":
         this.renderTodayDetails();
         break;
-      case 'Upcoming':
+      case "Upcoming":
         this.renderUpcomingDetails();
         break;
-      case 'Important':
+      case "Important":
         this.renderImportantDetails();
         break;
-      case 'Project':
+      case "Project":
         this.renderCurrentProject(this.currentProjectName);
         break;
     }
   };
+
   handleTaskFormSubmit = () => {
-    const newTaskTitle = document.getElementById('task-title').value;
+    const newTaskTitle = document.getElementById("task-title").value;
     const newTaskDescription =
-      document.getElementById('task-description').value;
-    const newTaskDueDate = document.getElementById('task-date').value;
-    const newTaskPriority = document.getElementById('task-priority').value;
+      document.getElementById("task-description").value;
+    const newTaskDueDate = document.getElementById("task-date").value;
+    const newTaskPriority = document.getElementById("task-priority").value;
 
     if (this.currentEditingProject && this.currentEditingTask) {
       this.editTask(
@@ -440,6 +475,7 @@ export default class UI {
     }
 
     ProjectController.saveProjects();
+    this.resetDialog();
     this.refreshCurrentView();
 
     this.updateAllBadges();
