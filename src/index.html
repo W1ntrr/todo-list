@@ -114,7 +114,9 @@
         <dialog data-modal id="project-dialog">
           <form id="project-form">
             <div class="project-warning">Project already exists</div>
-            <button class="close-project-button" formnovalidate>&times;</button>
+            <button type="button" class="close-project-button" formnovalidate>
+              &times;
+            </button>
             <div class="project-title">
               <input
                 type="text"
@@ -144,6 +146,22 @@
       <div class="content">
         <div class="content"></div>
       </div>
+
+      <!-- ===  CONFIRMATION DIALOG === -->
+      <dialog data-modal id="confirm-delete-dialog">
+        <form id="confirm-delete-form">
+          <h4 class="confirm-delete-heading">Delete this task?</h4>
+          <p class="confirm-delete-text">
+            Are you sure you want to delete this task?
+          </p>
+          <div class="confirm-button-container">
+            <button type="button" class="cancel-btn">Cancel</button>
+            <button type="button" class="confirm-btn">Confirm</button>
+          </div>
+        </form>
+      </dialog>
+
+      <!-- === ADD TASK DIALOG === -->
       <dialog data-modal id="dialog">
         <form id="task-form">
           <div class="title-row">

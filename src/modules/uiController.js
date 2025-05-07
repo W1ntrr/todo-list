@@ -7,7 +7,6 @@ import { format, isAfter, isToday, startOfToday, parseISO } from "date-fns";
   To-Do:
   - Redesign styling to match Any.do look
   - Show warning before deleting a task
-  - Decrease the number of badges when task completed
 */
 
 export default class UI {
@@ -208,19 +207,14 @@ export default class UI {
     );
 
     taskDelete.addEventListener("click", () => {
-      project.deleteTask(task.id);
-      ProjectController.saveProjects();
-      taskElement.remove();
-
-      this.updateTaskCount(project);
-      this.updateAllBadges();
-
-      this.refreshCurrentView();
+      this.displayConfirmationForm(project, task, taskElement);
     });
 
     checkbox.addEventListener("change", () => {
       taskText.classList.toggle("completed", checkbox.checked);
       task.toggleStatus();
+      this.updateTaskCount(project);
+      this.updateAllBadges();
       ProjectController.saveProjects();
     });
 
@@ -262,10 +256,30 @@ export default class UI {
     this.renderViewTasks("Important", (task) => task.priority === "High");
   };
 
-  displayProjectForm = () => {
-    const projectDialog = document.getElementById("project-dialog");
-    const projectForm = document.getElementById("project-form");
+  displayConfirmationForm = (project, task, taskElement) => {
+    const confirmDialog = document.getElementById("confirm-delete-dialog");
+    const confirmBtn = document.querySelector(".confirm-btn");
+    const cancelBtn = document.querySelector(".cancel-btn");
 
+    confirmDialog.showModal();
+    confirmBtn.onclick = () => {
+      project.deleteTask(task.id);
+      ProjectController.saveProjects();
+      taskElement.remove();
+
+      this.updateTaskCount(project);
+      this.updateAllBadges();
+
+      confirmDialog.close();
+      this.refreshCurrentView();
+    };
+
+    cancelBtn.onclick = () => {
+      confirmDialog.close();
+    };
+  };
+
+  displayProjectForm = () => {
     const addProjectBtn = document.querySelector(".add-project-btn");
     addProjectBtn.addEventListener("click", () => {
       this.projectDialog.showModal();
@@ -371,20 +385,24 @@ export default class UI {
       const title = group.querySelector(".task-group-title").textContent;
       if (title === project.name) {
         const countElement = group.querySelector(".task-count");
-        const count = project.tasks.length;
+        const incompleteTaskCount = project.tasks.filter(
+          (task) => task.status !== "Complete"
+        ).length;
 
         countElement.textContent =
-          count === 0
+          incompleteTaskCount === 0
             ? "No Task"
-            : `${count} ${count === 1 ? "Task" : "Tasks"}`;
+            : `${incompleteTaskCount} ${
+                incompleteTaskCount === 1 ? "Task" : "Tasks"
+              }`;
       }
     });
   };
 
   updateAllBadges = () => {
-    const allTasks = ProjectController.getAllProjects().flatMap(
-      (proj) => proj.tasks
-    );
+    const allTasks = ProjectController.getAllProjects()
+      .flatMap((proj) => proj.tasks)
+      .filter((task) => task.status !== "Complete");
 
     document.getElementById("badge-inbox").textContent = `${
       allTasks.length === 0 ? "" : allTasks.length

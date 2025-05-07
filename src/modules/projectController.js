@@ -1,16 +1,12 @@
-import Storage from './storage.js';
-import Project from './project.js';
+import Storage from "./storage.js";
+import Project from "./project.js";
 
 export default class ProjectController {
   static projects = [];
 
   static init() {
-    const savedProjects = Storage.loadProject();
-
-    this.projects = Array.isArray(savedProjects) ? savedProjects : [];
-
     if (this.projects.length === 0) {
-      this.addProject({ name: 'Default', tasks: [] });
+      this.addProject({ name: "Default", tasks: [] });
     }
   }
 
