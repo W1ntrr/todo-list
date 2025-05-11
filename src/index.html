@@ -103,9 +103,7 @@
               width="24px"
               fill="#aeb6bc"
             >
-              <path
-                d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"
-              />
+              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
             </svg>
           </button>
         </div>
@@ -114,24 +112,20 @@
         <dialog data-modal id="project-dialog">
           <form id="project-form">
             <div class="project-warning">Project already exists</div>
-            <button type="button" class="close-project-button" formnovalidate>
-              &times;
-            </button>
-            <div class="project-title">
-              <input
-                type="text"
-                name="project-name"
-                id="project-name"
-                placeholder="Add a project title"
-                required
-              />
+            <div class="main-row">
+              <button type="button" class="close-project-button" formnovalidate>&times;</button>
+              <div class="project-title">
+                <input
+                  type="text"
+                  name="project-name"
+                  id="project-name"
+                  placeholder="Add a project title"
+                  required
+                />
+              </div>
             </div>
             <div class="project-form-button-container">
-              <button
-                type="submit"
-                id="project-form-add-button"
-                data-close-form
-              >
+              <button type="submit" id="project-form-add-button" data-close-form disabled>
                 Add
               </button>
             </div>
@@ -151,9 +145,7 @@
       <dialog data-modal id="confirm-delete-dialog">
         <form id="confirm-delete-form">
           <h4 class="confirm-delete-heading">Delete this task?</h4>
-          <p class="confirm-delete-text">
-            Are you sure you want to delete this task?
-          </p>
+          <p class="confirm-delete-text">Are you sure you want to delete this task?</p>
           <div class="confirm-button-container">
             <button type="button" class="cancel-btn">Cancel</button>
             <button type="button" class="confirm-btn">Confirm</button>
