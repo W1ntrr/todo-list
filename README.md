@@ -1,6 +1,6 @@
 # To-Do
 
-A To-Do app built with HTML, CSS, and JavaScript. Designed for efficient task and project management with local data storage
+A To-Do app made with HTML, CSS, and JavaScript that lets you track tasks and projects, with your data saved in the browser for easy access anytime.
 
 🔗 **Live Preview**: [Launch App](https://w1ntrr.github.io/todo-list/)
 
