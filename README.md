@@ -4,25 +4,23 @@ A To-Do app built with HTML, CSS, and JavaScript. Designed for efficient task an
 
 🔗 **Live Preview**: [Launch App](https://w1ntrr.github.io/todo-list/)
 
----
 
-📸 **Screenshot**  
-![App Screenshot](./screenshot.png)
+## 📸 Screenshot
+![App Screenshot](./src/images/Screenshot.png)
 
----
 
 ## 🛠️ Installation
 
 > **Note:** The app is also playable live on [GitHub Pages](https://w1ntrr.github.io/todo-list/).
 
 1. Clone the repository**  
-```bash
-git clone https://github.com/W1ntrr/todo-list.git
-```
+  ```bash
+  git clone https://github.com/W1ntrr/todo-list.git
+  ```
 2. Navigate to the project folder
-```bash
-cd todo-list
-```
+  ```bash
+  cd todo-list
+  ```
 3. Open `index.html` in your browser to use the app.
 
 <br>
@@ -59,7 +57,7 @@ cd todo-list
 
 ## 📜 License
 
-- [MIT License](https://github.com/W1ntrr/tic-tac-toe/blob/main/LICENSE)
+- [MIT License](https://github.com/W1ntrr/todo-list/blob/bbad6f026796f996160617065af5dc5c7e127b40/LICENSE)
 - Copyright © 2025 - **[@W1ntrr](https://github.com/W1ntrr)**
 
 <br>
