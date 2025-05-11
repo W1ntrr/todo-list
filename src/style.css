@@ -210,6 +210,25 @@ body {
   margin-left: auto;
 }
 
+.project-delete {
+  visibility: hidden;
+  margin-left: auto;
+  color: var(--color-red);
+  background: none;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.project-item:hover .project-delete {
+  visibility: visible;
+}
+
+.project-delete:hover {
+  color: #952828;
+}
+
 .badge:empty {
   display: none;
 }
@@ -341,10 +360,12 @@ dialog {
   border: none;
   padding: 2rem;
   height: 55vh;
-  width: clamp(300px, 80vw, 600px);
+  width: clamp(200px, 80vw, 500px);
   background-color: var(--color-card-bg);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-  border-radius: 20px;
+  border-radius: 16px;
+  transition: all 0.25s ease;
+  z-index: 100;
 }
 
 #task-form {
@@ -542,4 +563,99 @@ textarea:hover {
     opacity: 0.6;
     cursor: default;
   }
+}
+
+#confirm-delete-dialog {
+  height: auto;
+  max-height: 250px;
+  width: clamp(280px, 90%, 450px);
+  padding: 1.25rem;
+}
+
+#confirm-delete-form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.confirm-delete-heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 0.5rem;
+}
+
+.confirm-delete-text {
+  color: var(--color-edge);
+  margin-bottom: 0.75rem;
+}
+
+.confirm-button-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.cancel-btn,
+.confirm-btn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: none;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.confirm-btn {
+  background-color: var(--color-accent-soft);
+  color: #fff;
+  transition: 0.15s ease-in-out;
+
+  &:hover {
+    background-color: #3472d4;
+  }
+}
+
+.cancel-btn {
+  color: var(--color-red);
+  transition: 0.15s ease-in-out;
+
+  &:hover {
+    color: #be3535;
+  }
+}
+
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+}
+
+dialog[open].closing {
+  animation: fadeOutUp 0.25s ease forwards;
+  pointer-events: none;
+}
+
+.custom-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: all ease 0.3s;
+  z-index: 99;
+}
+
+.custom-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
 }

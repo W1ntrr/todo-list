@@ -7,6 +7,8 @@ class Main {
     this.dialog = document.getElementById('dialog');
     this.projectDialog = document.getElementById('project-dialog');
 
+    this.setupDefaultProject();
+
     this.initializeComponents();
     this.initializeDOM();
     this.setupDialogSubmit();
@@ -43,10 +45,8 @@ class Main {
       const tabItem = e.target.closest('[data-tab]');
       if (!tabItem) return;
 
-      document.querySelectorAll('[data-tab').forEach((item) => {
-        item.classList.remove('active');
-      });
-      tabItem.classList.add('active');
+      this.setActiveStates(tabItem, '[data-tab]');
+      this.clearActiveStates('[data-project]');
 
       const tab = tabItem.dataset.tab;
       if (tab) {
@@ -75,10 +75,8 @@ class Main {
       const projectItem = e.target.closest('[data-project]');
       if (!projectItem) return;
 
-      document.querySelectorAll('[data-project]').forEach((item) => {
-        item.classList.remove('active');
-      });
-      projectItem.classList.add('active');
+      this.setActiveStates(projectItem, '[data-project]');
+      this.clearActiveStates('[data-tab');
 
       const projectName = projectItem.dataset.project;
 
@@ -104,8 +102,31 @@ class Main {
       this.ui.handleProjectFormSubmission();
     });
   }
+
+  clearActiveStates(groupSelector) {
+    document.querySelectorAll(groupSelector).forEach((item) => {
+      item.classList.remove('active');
+    });
+  }
+
+  setActiveStates(item, clearSelector) {
+    this.clearActiveStates(clearSelector);
+    item.classList.add('active');
+  }
+
+  setupDefaultProject() {
+    const defaultExists = ProjectController.projects.some;
+    (project) => project.name === 'Default';
+    const alreadyCreated = localStorage.getItem('defaultProjectCreated') === 'true';
+
+    if (!defaultExists && !alreadyCreated) {
+      ProjectController.addProject({ name: 'Default' });
+      localStorage.setItem('defaultProjectCreated', 'true');
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  ProjectController.init();
   new Main();
 });

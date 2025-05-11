@@ -114,6 +114,7 @@ export default class UI {
       addTaskBtn.addEventListener('click', () => {
         this.currentEditingProject = defaultProject;
         this.currentEditingTask = null;
+        document.querySelector('.custom-backdrop').classList.add('visible');
         this.dialog.showModal();
 
         this.closeButton.addEventListener('click', () => {
@@ -185,6 +186,7 @@ export default class UI {
         document.getElementById('task-date').value = task.dueDate;
         document.getElementById('task-priority').value = task.priority;
 
+        document.querySelector('.custom-backdrop').classList.add('visible');
         this.dialog.showModal();
       }
     });
@@ -201,6 +203,7 @@ export default class UI {
     );
 
     taskDelete.addEventListener('click', () => {
+      document.querySelector('.custom-backdrop').classList.add('visible');
       this.displayConfirmationForm(project, task, taskElement);
     });
 
@@ -262,12 +265,12 @@ export default class UI {
       this.updateTaskCount(project);
       this.updateAllBadges();
 
-      confirmDialog.close();
+      this.closeDialogWithAnimation(confirmDialog);
       this.refreshCurrentView();
     };
 
     cancelBtn.onclick = () => {
-      confirmDialog.close();
+      this.closeDialogWithAnimation(confirmDialog);
     };
   };
 
@@ -275,12 +278,13 @@ export default class UI {
     const addProjectBtn = document.querySelector('.add-project-btn');
 
     addProjectBtn.addEventListener('click', () => {
+      document.querySelector('.custom-backdrop').classList.add('visible');
       this.projectDialog.showModal();
     });
 
     const closeProjectBtn = document.querySelector('.close-project-button');
     closeProjectBtn.addEventListener('click', () => {
-      this.projectDialog.close();
+      this.closeDialogWithAnimation(this.projectDialog);
       this.projectForm.reset();
       this.projectWarning.classList.remove('show');
     });
@@ -309,7 +313,7 @@ export default class UI {
       ProjectController.addProject({ name: newProjectName });
       this.refreshCurrentView();
       this.renderSidebarProjects(newProjectName);
-      this.projectDialog.close();
+      this.closeDialogWithAnimation(this.projectDialog);
       this.projectForm.reset();
     } else {
       this.projectWarning.classList.add('show');
@@ -335,10 +339,21 @@ export default class UI {
     const badge = document.createElement('span');
     badge.classList.add('badge');
 
+    const projectBtn = document.createElement('button');
+    projectBtn.classList.add('project-delete');
+    projectBtn.textContent = 'X';
+
+    projectBtn.addEventListener('click', () => {
+      ProjectController.deleteProject({ name: projectName });
+      projectItem.remove();
+      this.refreshCurrentView();
+    });
+
     projectList.appendChild(projectItem);
     projectItem.appendChild(projectSVG);
     projectItem.appendChild(projectTitle);
     projectItem.appendChild(badge);
+    projectItem.appendChild(projectBtn);
   };
 
   renderCurrentProject = (currentProject) => {
@@ -447,7 +462,7 @@ export default class UI {
     this.currentEditingProject = null;
     this.currentEditingTask = null;
 
-    this.dialog.close();
+    this.closeDialogWithAnimation(this.dialog);
     this.form.reset();
   };
 
@@ -484,9 +499,20 @@ export default class UI {
     }
 
     ProjectController.saveProjects();
+    this.closeDialogWithAnimation(this.dialog);
     this.resetDialog();
     this.refreshCurrentView();
 
     this.updateAllBadges();
+  };
+
+  closeDialogWithAnimation = (dialog) => {
+    dialog.classList.add('closing');
+
+    document.querySelector('.custom-backdrop').classList.remove('visible');
+    setTimeout(() => {
+      dialog.close();
+      dialog.classList.remove('closing');
+    }, 250);
   };
 }

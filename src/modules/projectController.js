@@ -1,25 +1,19 @@
-import Storage from "./storage.js";
-import Project from "./project.js";
+import Storage from './storage.js';
+import Project from './project.js';
 
 export default class ProjectController {
   static projects = [];
 
   static init() {
-    if (this.projects.length === 0) {
-      this.addProject({ name: "Default", tasks: [] });
-    }
+    this.projects = Storage.loadProject();
   }
 
   static addProject(projectData) {
-    if (
-      this.projects.some(
-        (storedProject) => storedProject.name === projectData.name
-      )
-    ) {
-      throw new Error(`Project ${project} already exists`);
-    }
-
     const project = new Project(projectData.name);
+
+    if (this.projects.some((storedProject) => storedProject.name === projectData.name)) {
+      throw new Error(`Project ${project.name} already exists`);
+    }
 
     this.projects.push(project);
     this.saveProjects();
