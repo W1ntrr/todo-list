@@ -336,9 +336,6 @@ export default class UI {
     projectTitle.classList.add('project-text');
     projectTitle.textContent = projectName;
 
-    const badge = document.createElement('span');
-    badge.classList.add('badge');
-
     const projectBtn = document.createElement('button');
     projectBtn.classList.add('project-delete');
     projectBtn.textContent = 'X';
@@ -352,7 +349,6 @@ export default class UI {
     projectList.appendChild(projectItem);
     projectItem.appendChild(projectSVG);
     projectItem.appendChild(projectTitle);
-    projectItem.appendChild(badge);
     projectItem.appendChild(projectBtn);
   };
 

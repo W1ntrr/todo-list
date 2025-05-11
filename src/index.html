@@ -6,9 +6,7 @@
     <title>Todo List</title>
   </head>
   <body>
-    <!-- === SIDEBAR === -->
     <nav id="sidebar">
-      <!-- === USER INFO === -->
       <div class="sidebar-user">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +22,6 @@
         <span class="user-name">User</span>
       </div>
 
-      <!-- === MAIN MENU === -->
       <div class="sidebar-home">
         <div class="menu-item" data-tab="inbox">
           <svg
@@ -91,7 +88,6 @@
         </div>
       </div>
 
-      <!-- === PROJECT LIST === -->
       <div class="sidebar-projects">
         <div class="sidebar-project-header">
           <h2 class="sidebar-project-title">Projects</h2>
@@ -134,14 +130,12 @@
       </div>
     </nav>
 
-    <!-- === MAIN CONTENT === -->
     <main class="container">
       <h1 class="content-header">Inbox</h1>
       <div class="content">
         <div class="content"></div>
       </div>
 
-      <!-- ===  CONFIRMATION DIALOG === -->
       <dialog data-modal id="confirm-delete-dialog">
         <form id="confirm-delete-form">
           <h4 class="confirm-delete-heading">Delete this task?</h4>
@@ -153,7 +147,6 @@
         </form>
       </dialog>
 
-      <!-- === ADD TASK DIALOG === -->
       <div class="custom-backdrop"></div>
       <dialog data-modal id="dialog">
         <form id="task-form">
