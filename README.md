@@ -2,7 +2,7 @@
 
 A To-Do app made with HTML, CSS, and JavaScript that lets you track tasks and projects, with your data saved in the browser for easy access anytime.
 
-🔗 **Live Preview**: [Launch App](https://w1ntrr.github.io/todo-list/)
+🔗 **Live Preview**: [Launch App](https://rycatt.github.io/todo-list/)
 
 
 ## 📸 Screenshot
@@ -11,11 +11,11 @@ A To-Do app made with HTML, CSS, and JavaScript that lets you track tasks and pr
 
 ## 🛠️ Installation
 
-> **Note:** The app is also playable live on [GitHub Pages](https://w1ntrr.github.io/todo-list/).
+> **Note:** The app is also playable live on [GitHub Pages](https://rycatt.github.io/todo-list/).
 
 1. Clone the repository**  
   ```bash
-  git clone https://github.com/W1ntrr/todo-list.git
+  git clone https://github.com/rycatt/todo-list.git
   ```
 2. Navigate to the project folder
   ```bash
@@ -57,12 +57,12 @@ A To-Do app made with HTML, CSS, and JavaScript that lets you track tasks and pr
 
 ## 📜 License
 
-- [MIT License](https://github.com/W1ntrr/todo-list/blob/bbad6f026796f996160617065af5dc5c7e127b40/LICENSE)
-- Copyright © 2025 - **[@W1ntrr](https://github.com/W1ntrr)**
+- [MIT License](https://github.com/rycatt/todo-list/blob/bbad6f026796f996160617065af5dc5c7e127b40/LICENSE)
+- Copyright © 2025 - **[@rycatt](https://github.com/rycatt)**
 
 <br>
 
 ## ✍️ Author
 
-Created by **[@W1ntrr](https://github.com/W1ntrr)**  
+Created by **[@rycatt](https://github.com/rycatt)**  
 Built with guidance from The Odin Project 🙌
